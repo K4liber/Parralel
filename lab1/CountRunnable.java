@@ -7,7 +7,7 @@ public class CountRunnable implements Runnable {
 
     public CountRunnable(double[] a) {
        array = a;
-       sum = 0;
+       this.sum = 0;
     }
 
     public void run(){
@@ -18,5 +18,9 @@ public class CountRunnable implements Runnable {
 
     public double getSum() {
         return sum;
+    }
+    
+    public void setSum(double s) {
+        this.sum = s;
     }
 }
