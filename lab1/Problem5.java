@@ -1,14 +1,17 @@
-import threads.CountRunnable;
+import threads.CountRunnableSignal;
 import java.util.Random;
 import java.time.Duration;
 import java.time.Instant;
 import java.io.PrintWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 // Compile: javac -d . Problem4.java
-// Run: java Problem4 'arraySize' 'loops'
-public class Problem4 {
+// Run: java Problem5 'arraySize' 'loops'
+public class Problem5 {
     
     private static Random r;
     private static Integer threadsNumber;
@@ -21,20 +24,20 @@ public class Problem4 {
         loops = Integer.parseInt(args[1]);
         r = new Random();
         try{
-			new Problem4();
+			new Problem5();
 		} catch (InterruptedException err) {
 			System.out.println("Error!");
 		}
     }
 
-    public Problem4() throws InterruptedException{
+    public Problem5() throws InterruptedException{
         double[] array = new double[arraySize];
         for(int i = 0; i < array.length; i++) {
             array[i] = 1 + r.nextDouble() * 1000000;
         }
         
         //Initialize runnables
-        CountRunnable[] countRunnables = new CountRunnable[threadsNumber];
+        CountRunnableSignal[] countRunnables = new CountRunnableSignal[threadsNumber];
         
         //Split array
         int partSize = arraySize/threadsNumber;
@@ -46,31 +49,25 @@ public class Problem4 {
 		}
 		
 		//Distribute parts for runnables
+		CountDownLatch sync = new CountDownLatch(threadsNumber);
 		for (int i=0;i<threadsNumber;i++) 
-			countRunnables[i] = new CountRunnable(arrays[i]);
+			countRunnables[i] = new CountRunnableSignal(arrays[i], sync);
 		
+		final ExecutorService executor = Executors.newFixedThreadPool(threadsNumber); 
+
 		//Count mean time
 		double timeMean = 0;
 		for( int i=0;i<loops;i++) {
 			Instant start = Instant.now();
 			//Start threads
-			Thread[] threads = new Thread[threadsNumber];
 			for (int j=0;j<threadsNumber;j++) {
-				threads[j] = new Thread(countRunnables[j]);
-				threads[j].start();
+				executor.execute(countRunnables[j]);
 			}
-			
-			//Join all
-			for (int j=0;j<threadsNumber;j++) {
-				try{
-					threads[j].join();
-				} catch (InterruptedException err) {
-					System.out.println("Error!");
-				}
-			}
+			sync.await(); 
+
 			//Sum all
 			double sum = 0;
-			for (CountRunnable countRunnable : countRunnables) {
+			for (CountRunnableSignal countRunnable : countRunnables) {
 				sum += countRunnable.getSum();
 				countRunnable.setSum(0.0);
 			}
@@ -78,10 +75,11 @@ public class Problem4 {
 			Instant end = Instant.now();
 			timeMean += Duration.between(start, end).toMillis();
 		}
-		
+
+		executor.shutdown();
 		//Save Time to file 
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(
-				new File("problem4.csv"), 
+				new File("problem5.csv"), 
 				true)
 			)) {
 			out.println(arraySize + ", " + timeMean);
