@@ -12,7 +12,6 @@ df = pd.read_csv('problem3.csv',
 )
 
 meanDf = df.groupby("size", as_index=False).mean()
-print(meanDf)
 
 plt.plot(meanDf["size"].values, meanDf["time"].values, '-o', label="One thread")
 plt.xlabel("Array size")
