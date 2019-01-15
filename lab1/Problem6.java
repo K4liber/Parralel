@@ -32,7 +32,7 @@ public class Problem6 {
         double[] array = new double[arraySize];
         AtomicIntegerArray checkArray =  new AtomicIntegerArray(arraySize);
         for(int i = 0; i < array.length; i++) {
-            array[i] = 1000;//1 + r.nextDouble() * 1000000;
+            array[i] = 100;//1 + r.nextDouble() * 1000000;
             checkArray.set(i, 0);
         }
         

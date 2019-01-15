@@ -30,7 +30,7 @@ public class Problem4 {
     public Problem4() throws InterruptedException{
         double[] array = new double[arraySize];
         for(int i = 0; i < array.length; i++) {
-            array[i] = 1 + r.nextDouble() * 1000000;
+            array[i] = 100; //2.0*(double)i/(double)array.length;
         }
         
         //Initialize runnables
@@ -74,15 +74,14 @@ public class Problem4 {
 				sum += countRunnable.getSum();
 				countRunnable.setSum(0.0);
 			}
-			//System.out.println("Sum: " + sum);
+			System.out.println("Sum: " + sum);
 			Instant end = Instant.now();
 			timeMean += Duration.between(start, end).toMillis();
 		}
 		
 		//Save Time to file 
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(
-				new File("problem7-4.csv"),
-				//new File("problem4.csv"), 
+				new File("problem4.csv"), 
 				true)
 			)) {
 			out.println(arraySize + ", " + timeMean);

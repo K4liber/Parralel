@@ -18,7 +18,7 @@ public class CountRunnableAtomic implements Runnable {
     public void run(){
         for (int i = 0; i < this.array.length; i++) {
 			if (this.checkArray.compareAndSet(i, 0, 1)) {
-				sum += array[i];
+				sum += Math.log10(array[i]);
 			}
 		}
     }

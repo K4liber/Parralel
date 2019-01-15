@@ -27,7 +27,7 @@ public class Problem3 {
     public Problem3() throws InterruptedException{
         double[] array = new double[arraySize];
         for(int i = 0; i < array.length; i++) {
-            array[i] = 1000;
+            array[i] = 100;
         }
 		countLogSum(array);
     }
@@ -39,14 +39,13 @@ public class Problem3 {
 		for(int i=0;i<loops;i++) {
 			Instant start = Instant.now();
 			for (double el : array) {
-				sum += Math.log(el);
+				sum += Math.log10(el);
 			}
 			Instant end = Instant.now();
 			timeMean += Duration.between(start, end).toMillis();
 		}
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(
-				// new File("problem3.csv"), 
-				new File("problem7-3.csv"), 
+				new File("problem3.csv"), 
 				true)
 			)) {
 			out.println(arraySize + ", " + timeMean);

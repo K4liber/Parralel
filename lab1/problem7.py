@@ -5,23 +5,27 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # Run: python3 problem5.py
 
-df = pd.read_csv('problem7aSmall.csv',
+df = pd.read_csv('problem7.csv',
     names = [
         "arraySize", "time", "size"
     ]
 )
 
-df2 = pd.read_csv('problem7-3.csv',
+df2 = pd.read_csv('problem3.csv',
     names = [
         "size", "time"
     ]
 )
+filter2 = df2["size"]==5000000
+df2.where(filter2, inplace = True) 
 
-df3 = pd.read_csv('problem7-4.csv',
+df3 = pd.read_csv('problem4.csv',
     names = [
         "size", "time"
     ]
 )
+filter3 = df3["size"]==5000000
+df3.where(filter3, inplace = True)
 
 meanDf = df.groupby("size", as_index=False).mean()
 meanDf2 = df2.groupby("size", as_index=False).mean()

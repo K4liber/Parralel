@@ -34,7 +34,7 @@ public class Problem7 {
         double[] array = new double[arraySize];
         AtomicIntegerArray checkArray =  new AtomicIntegerArray(arraySize/blockSize);
         for(int i = 0; i < array.length; i++) {
-            array[i] = 2.0*(double)i/(double)array.length;
+            array[i] = 100; //2.0*(double)i/(double)array.length;
         }
         for(int i = 0; i < arraySize/blockSize; i++) {
 			checkArray.set(i, 0);
@@ -84,8 +84,7 @@ public class Problem7 {
 		
 		//Save Time to file 
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(
-				// new File("problem3.csv"), 
-				new File("problem7a-Check.csv"), 
+				new File("problem7.csv"), 
 				true)
 			)) {
 			out.println(arraySize + ", " + timeMean + ", " + blockSize);

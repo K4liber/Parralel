@@ -12,8 +12,9 @@ df = pd.read_csv('problem3.csv',
 )
 
 meanDf = df.groupby("size", as_index=False).mean()
+stdDf = df.groupby("size", as_index=False).std()
 
-plt.plot(meanDf["size"].values, meanDf["time"].values, '-o', label="One thread")
+plt.errorbar(x=meanDf["size"].values, y=meanDf["time"].values, yerr=stdDf["time"].values, fmt='-o', label="One thread")
 plt.xlabel("Array size")
 plt.ylabel("Time [ms]")
 plt.legend()

@@ -12,7 +12,7 @@ public class CountRunnable implements Runnable {
 
     public void run(){
         for (double el : array) {
-            sum += Math.log(el);
+            sum += Math.log10(el);
         }
     }
 

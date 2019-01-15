@@ -9,7 +9,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-// Compile: javac -d . Problem4.java
+// Compile: javac -d . Problem5.java
 // Run: java Problem5 'arraySize' 'loops'
 public class Problem5 {
     
@@ -33,7 +33,7 @@ public class Problem5 {
     public Problem5() throws InterruptedException{
         double[] array = new double[arraySize];
         for(int i = 0; i < array.length; i++) {
-            array[i] = 1 + r.nextDouble() * 1000000;
+            array[i] = 100;
         }
         
         //Initialize runnables
@@ -67,16 +67,18 @@ public class Problem5 {
 
 			//Sum all
 			double sum = 0;
+			sync = new CountDownLatch(threadsNumber);
 			for (CountRunnableSignal countRunnable : countRunnables) {
 				sum += countRunnable.getSum();
 				countRunnable.setSum(0.0);
+				countRunnable.setSync(sync);
 			}
-			//System.out.println("Sum: " + sum);
+			System.out.println("Sum: " + sum);
 			Instant end = Instant.now();
 			timeMean += Duration.between(start, end).toMillis();
 		}
-
 		executor.shutdown();
+		
 		//Save Time to file 
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(
 				new File("problem5.csv"), 

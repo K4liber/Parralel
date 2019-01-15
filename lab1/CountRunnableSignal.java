@@ -15,7 +15,7 @@ public class CountRunnableSignal implements Runnable {
 
     public void run(){
         for (double el : array) {
-            sum += Math.log(el);
+            sum += Math.log10(el);
         }
         sync.countDown();
     }
@@ -26,5 +26,9 @@ public class CountRunnableSignal implements Runnable {
     
     public void setSum(double s) {
         this.sum = s;
+    }
+
+    public void setSync(CountDownLatch s) {
+        this.sync = s;
     }
 }
