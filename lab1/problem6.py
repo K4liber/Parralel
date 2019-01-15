@@ -46,8 +46,8 @@ plt.errorbar(x=meanDf4["size"].values, y=meanDf4["time"].values, yerr=stdDf4["ti
 
 plt.xlabel("Array size")
 plt.ylabel("Time [ms]")
-plt.yscale("log")
-plt.xscale("log")
+#plt.yscale("log")
+#plt.xscale("log")
 plt.legend()
 plt.savefig("problem6.png")
 plt.show()

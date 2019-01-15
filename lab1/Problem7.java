@@ -1,53 +1,51 @@
-import threads.CountRunnable;
+import threads.CountBlockAtomic;
 import java.util.Random;
 import java.time.Duration;
 import java.time.Instant;
 import java.io.PrintWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 // Compile: javac -d . Problem4.java
 // Run: java Problem4 'arraySize' 'loops'
-public class Problem4 {
+public class Problem7 {
     
     private static Random r;
     private static Integer threadsNumber;
     private static Integer loops;
     private static Integer arraySize;
+    private static Integer blockSize;
 
     public static void main(String[] args) {
         threadsNumber = Runtime.getRuntime().availableProcessors();
         arraySize = Integer.parseInt(args[0]);
         loops = Integer.parseInt(args[1]);
+        blockSize = Integer.parseInt(args[2]);
         r = new Random();
         try{
-			new Problem4();
+			new Problem7();
 		} catch (InterruptedException err) {
 			System.out.println("Error!");
 		}
     }
 
-    public Problem4() throws InterruptedException{
+    public Problem7() throws InterruptedException {
         double[] array = new double[arraySize];
+        AtomicIntegerArray checkArray =  new AtomicIntegerArray(arraySize/blockSize);
         for(int i = 0; i < array.length; i++) {
-            array[i] = 1 + r.nextDouble() * 1000000;
+            array[i] = 2.0*(double)i/(double)array.length;
         }
+        for(int i = 0; i < arraySize/blockSize; i++) {
+			checkArray.set(i, 0);
+		}
         
         //Initialize runnables
-        CountRunnable[] countRunnables = new CountRunnable[threadsNumber];
-        
-        //Split array
-        int partSize = arraySize/threadsNumber;
-		double[][] arrays = new double[threadsNumber][partSize];
-		for (int i=0;i<partSize;i++) {
-			for (int part=0;part<threadsNumber;part++) {
-				arrays[part][i] = array[i+part*partSize];
-			}
-		}
+        CountBlockAtomic[] countRunnables = new CountBlockAtomic[threadsNumber];
 		
 		//Distribute parts for runnables
 		for (int i=0;i<threadsNumber;i++) 
-			countRunnables[i] = new CountRunnable(arrays[i]);
+			countRunnables[i] = new CountBlockAtomic(array, checkArray, blockSize);
 		
 		//Count mean time
 		double timeMean = 0;
@@ -70,22 +68,27 @@ public class Problem4 {
 			}
 			//Sum all
 			double sum = 0;
-			for (CountRunnable countRunnable : countRunnables) {
+			for (CountBlockAtomic countRunnable : countRunnables) {
 				sum += countRunnable.getSum();
 				countRunnable.setSum(0.0);
 			}
-			//System.out.println("Sum: " + sum);
+			System.out.println("Sum: " + sum);
 			Instant end = Instant.now();
 			timeMean += Duration.between(start, end).toMillis();
+			
+			// Clear checks
+			for(int j = 0; j < arraySize/blockSize; j++) {
+				checkArray.set(j, 0);
+			}
 		}
 		
 		//Save Time to file 
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(
-				new File("problem7-4.csv"),
-				//new File("problem4.csv"), 
+				// new File("problem3.csv"), 
+				new File("problem7a-Check.csv"), 
 				true)
 			)) {
-			out.println(arraySize + ", " + timeMean);
+			out.println(arraySize + ", " + timeMean + ", " + blockSize);
 		} catch (java.io.FileNotFoundException e) {
 			System.out.println("File Error!");
 		}

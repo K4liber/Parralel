@@ -20,8 +20,9 @@ public class CountBlockAtomic implements Runnable {
     public void run(){
         for (int i = 0; i < this.array.length/this.blockSize; i++) {
 			if (this.checkArray.compareAndSet(i, 0, 1)) {
-				for(int j = i*this.blockSize; j<(i+1)*blockSize; j++)
-					sum += array[i];
+				for(int j = i*this.blockSize; j<(i+1)*blockSize; j++) {
+					sum += array[j];
+				}
 			}
 		}
     }
