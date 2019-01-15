@@ -7,9 +7,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
-// Compile: javac -d . Problem4.java
-// Run: java Problem4 'arraySize' 'loops'
-public class Problem7 {
+// Compile: javac -d . Problem7a.java
+// Run: java Problem7a 'arraySize' 'loops' 'blockSize'
+public class Problem7a {
     
     private static Random r;
     private static Integer threadsNumber;
@@ -24,13 +24,13 @@ public class Problem7 {
         blockSize = Integer.parseInt(args[2]);
         r = new Random();
         try{
-			new Problem7();
+			new Problem7a();
 		} catch (InterruptedException err) {
 			System.out.println("Error!");
 		}
     }
 
-    public Problem7() throws InterruptedException {
+    public Problem7a() throws InterruptedException {
         double[] array = new double[arraySize];
         AtomicIntegerArray checkArray =  new AtomicIntegerArray(arraySize/blockSize);
         for(int i = 0; i < array.length; i++) {
@@ -84,7 +84,7 @@ public class Problem7 {
 		
 		//Save Time to file 
 		try (PrintWriter out = new PrintWriter(new FileOutputStream(
-				new File("problem7.csv"), 
+				new File("problem7a.csv"), 
 				true)
 			)) {
 			out.println(arraySize + ", " + timeMean + ", " + blockSize);
