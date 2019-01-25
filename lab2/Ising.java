@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.Executors;
 import java.io.PrintWriter;
 import java.io.File;
@@ -23,11 +24,11 @@ public class Ising {
 	private double B;
 	private boolean[][] s;
 	private int steps = 100000;
-	private CountEnergy[][] counters;
 	private ExecutorService executor; 
 	private CountDownLatch latch;
 	private Integer availableProcessors;
 	private AtomicBoolean[][] locks;
+	private AtomicInteger stepsDid;
 	private Random random;
 
 	public Ising(int N, double J, double h, double B) {
@@ -36,13 +37,13 @@ public class Ising {
 		this.h = h;
 		this.B = B;
 		this.random = new Random();
-		this.counters = new CountEnergy[N][N];
 		this.s = new boolean[N][N];
+		this.stepsDid = new AtomicInteger(0);
 		this.availableProcessors = Runtime.getRuntime().availableProcessors();
 		this.executor = Executors.newFixedThreadPool(this.availableProcessors);
 		this.randomSpins();
 		this.createLocks();
-		this.createCounters();
+		this.latch = new CountDownLatch(this.steps);
 	}
 	
 	public void vizualize() {
@@ -71,16 +72,6 @@ public class Ising {
 		for (int i=0;i<this.N;i++) {
 			for (int j=0;j<this.N;j++) {
 				this.s[i][j] = this.random.nextInt(2) == 1;
-			}
-		}
-	}
-	
-	private void createCounters() {
-		this.latch = new CountDownLatch(this.steps);
-
-		for (int i=0;i<this.N;i++) {
-			for (int j=0;j<this.N;j++) {
-				this.counters[i][j] = new CountEnergy(J, B, h, s, i, j, N, this.latch, this.locks);
 			}
 		}
 	}
@@ -117,10 +108,9 @@ public class Ising {
 
 	public void go() {
 		try {
-			while (this.latch.getCount() > 0) {
-				int i = this.random.nextInt(this.N);
-				int j = this.random.nextInt(this.N);
-				this.executor.execute(this.counters[i][j]);
+			while (this.steps > 0) {
+				this.executor.execute(new CountEnergy(J, B, h, s, N, this.latch, this.locks, this.stepsDid));
+				this.steps--;
 			}
 
 			this.latch.await();
